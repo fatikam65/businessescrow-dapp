@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BusinessEscrow dApp ✨</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', Arial, sans-serif;
+      background: linear-gradient(135deg, #fce4f3, #e8e0f8, #d9eeff);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .container { max-width: 780px; margin: 0 auto; }
+
+    .header { text-align: center; margin-bottom: 36px; }
+    .header img {
+      width: 70px;
+      filter: drop-shadow(0 4px 10px rgba(180,120,220,0.4));
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .header h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, #c084fc, #818cf8, #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 12px 0 6px;
+    }
+    .header p { color: #8b7aa8; font-size: 0.95rem; max-width: 500px; margin: 0 auto; }
+
+    .info-box {
+      background: rgba(255,255,255,0.65);
+      border: 1.5px solid #e0d4f7;
+      border-radius: 18px;
+      padding: 18px 24px;
+      margin-bottom: 24px;
+      backdrop-filter: blur(8px);
+    }
+    .info-box h2 { color: #a78bca; font-size: 1rem; margin-bottom: 10px; }
+    .info-box ul { list-style: none; }
+    .info-box ul li { color: #7c6fa0; font-size: 0.9rem; padding: 3px 0; }
+    .info-box ul li::before { content: "🌸 "; }
+    .info-box a { color: #818cf8; font-weight: 700; font-size: 0.85rem; text-decoration: none; }
+    .info-box a:hover { text-decoration: underline; }
+
+    .card {
+      background: rgba(255,255,255,0.75);
+      border-radius: 22px;
+      padding: 24px 28px;
+      margin-bottom: 20px;
+      border: 1.5px solid #ede0f7;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 24px rgba(180,150,220,0.12);
+      transition: transform 0.2s;
+    }
+    .card:hover { transform: translateY(-3px); }
+    .card h2 { font-size: 1.1rem; font-weight: 800; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .card:nth-child(1) h2 { color: #c084fc; }
+    .card:nth-child(2) h2 { color: #f472b6; }
+    .card:nth-child(3) h2 { color: #818cf8; }
+    .card:nth-child(4) h2 { color: #60a5fa; }
+
+    input {
+      width: 100%;
+      padding: 11px 16px;
+      margin: 6px 0;
+      border: 1.5px solid #ddd6fe;
+      border-radius: 12px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.9rem;
+      color: #5b4f7c;
+      background: rgba(255,255,255,0.8);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input:focus { border-color: #c084fc; box-shadow: 0 0 0 3px rgba(192,132,252,0.15); }
+    input::placeholder { color: #c4b5d8; }
+
+    .btn {
+      display: inline-block;
+      padding: 11px 26px;
+      border: none;
+      border-radius: 50px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn:hover { transform: scale(1.04); }
+    .btn:active { transform: scale(0.97); }
+    .btn-purple { background: linear-gradient(135deg, #c084fc, #a78bfa); color: white; box-shadow: 0 4px 14px rgba(167,139,250,0.4); }
+    .btn-pink   { background: linear-gradient(135deg, #f472b6, #fb7185); color: white; box-shadow: 0 4px 14px rgba(244,114,182,0.4); }
+    .btn-indigo { background: linear-gradient(135deg, #818cf8, #6366f1); color: white; box-shadow: 0 4px 14px rgba(129,140,248,0.4); }
+    .btn-blue   { background: linear-gradient(135deg, #60a5fa, #38bdf8); color: white; box-shadow: 0 4px 14px rgba(96,165,250,0.4); }
+
+    .status-msg { margin-top: 12px; padding: 10px 16px; border-radius: 12px; font-size: 0.88rem; font-weight: 600; word-break: break-all; display: none; }
+    .status-msg.show { display: block; }
+    .status-success { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+    .status-error   { background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; }
+    .status-info    { background: #f5f3ff; color: #7c3aed; border: 1px solid #ddd6fe; }
+
+    #walletAddress { margin-top: 10px; font-size: 0.85rem; color: #a78bca; font-weight: 600; }
+
+    #invoiceResult {
+      margin-top: 12px;
+      background: #f5f3ff;
+      border: 1.5px solid #ddd6fe;
+      border-radius: 14px;
+      padding: 14px 18px;
+      font-size: 0.9rem;
+      color: #5b4f7c;
+      line-height: 1.8;
+      display: none;
+    }
+    #invoiceResult.show { display: block; }
+    #invoiceResult strong { color: #818cf8; }
+
+    .footer { text-align: center; color: #b8a9d4; font-size: 0.82rem; margin-top: 30px; padding-bottom: 20px; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png" alt="Ethereum Logo" />
+    <h1>✨ BusinessEscrow dApp</h1>
+    <p>A decentralized invoice system on the <strong>Sepolia Testnet</strong>. Create and pay invoices securely through smart contracts.</p>
+  </div>
+
+  <div class="info-box">
+    <h2>🌷 How it works</h2>
+    <ul>
+      <li>Create invoices with a reference, payee address, and ETH amount</li>
+      <li>Pay invoices — ETH is sent directly to the payee</li>
+      <li>Look up any invoice by its ID on-chain</li>
+      <li>All transactions are immutable on the Ethereum blockchain</li>
+    </ul>
+    <p style="margin-top:10px;">
+      🔗 Owner Wallet on Etherscan:
+      <a href="https://sepolia.etherscan.io/address/0xFB221AE76C97641A5BF364a16723F0fce3B67A43" target="_blank">
+        0xFB221AE76C97641A5BF364a16723F0fce3B67A43
+      </a>
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🦊 Connect Wallet</h2>
+    <button class="btn btn-purple" onclick="connectWallet()">Connect MetaMask</button>
+    <div id="walletAddress">Not connected yet 💜</div>
+  </div>
+
+  <div class="card">
+    <h2>🌸 Create Invoice</h2>
+    <input id="invoiceRef"   placeholder="Invoice Reference (e.g. INV-001)" />
+    <input id="payeeAddress" placeholder="Payee Wallet Address (0x...)" />
+    <input id="amountWei"    placeholder="Amount in Wei (e.g. 1000000000000000 = 0.001 ETH)" />
+    <button class="btn btn-pink" onclick="createInvoice()">Create Invoice</button>
+    <div id="createStatus" class="status-msg"></div>
+  </div>
+
+  <div class="card">
+    <h2>💸 Pay Invoice</h2>
+    <input id="payId"     placeholder="Invoice ID (e.g. 1)" />
+    <input id="payAmount" placeholder="Amount in Wei (must match invoice amount)" />
+    <button class="btn btn-indigo" onclick="payInvoice()">Pay Invoice</button>
+    <div id="payStatus" class="status-msg"></div>
+  </div>
+
+  <div class="card">
+    <h2>🔍 Look Up Invoice</h2>
+    <input id="getInvoiceId" placeholder="Invoice ID (e.g. 1)" />
+    <button class="btn btn-blue" onclick="getInvoice()">Get Details</button>
+    <div id="invoiceResult"></div>
+  </div>
+
+  <div class="footer">Made with 💜 by Fatima Kamran · MG3012 Blockchain Technology · Sepolia Testnet</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+<script>
+  // ⚠️ REPLACE THIS with your deployed contract address from Remix (0xEE7...F792c)
+  const CONTRACT_ADDRESS = "0xEE785d6f3A1B93e64823A5E659B655EE195F792c";
+
+  const ABI = [
+    "function createInvoice(string memory _invoiceRef, address payable _payee, uint256 _amountInWei) public returns (uint256)",
+    "function payInvoice(uint256 _id) public payable",
+    "function getInvoice(uint256 _id) public view returns (uint256, string, address, address, uint256, uint8)",
+    "function getInvoiceCount() public view returns (uint256)",
+    "function owner() public view returns (address)"
+  ];
+
+  let provider, signer, contract;
+
+  function showStatus(id, msg, type) {
+    const el = document.getElementById(id);
+    el.textContent = msg;
+    el.className = "status-msg show status-" + type;
+  }
+
+  async function connectWallet() {
+    if (typeof window.ethereum === "undefined") {
+      alert("MetaMask not found! Please install it.");
+      return;
+    }
+    await window.ethereum.request({ method: "eth_requestAccounts" });
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    signer = provider.getSigner();
+    contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+    const address = await signer.getAddress();
+    document.getElementById("walletAddress").innerText = "✅ Connected: " + address;
+  }
+
+  async function createInvoice() {
+    if (!contract) { alert("Connect wallet first! 💜"); return; }
+    const ref    = document.getElementById("invoiceRef").value;
+    const payee  = document.getElementById("payeeAddress").value;
+    const amount = document.getElementById("amountWei").value;
+    try {
+      showStatus("createStatus", "⏳ Sending transaction...", "info");
+      const tx = await contract.createInvoice(ref, payee, amount);
+      await tx.wait();
+      showStatus("createStatus", "✅ Invoice created! TX: " + tx.hash, "success");
+    } catch (err) {
+      showStatus("createStatus", "❌ " + err.message, "error");
+    }
+  }
+
+  async function payInvoice() {
+    if (!contract) { alert("Connect wallet first! 💜"); return; }
+    const id     = document.getElementById("payId").value;
+    const amount = document.getElementById("payAmount").value;
+    try {
+      showStatus("payStatus", "⏳ Sending payment...", "info");
+      const tx = await contract.payInvoice(id, { value: amount });
+      await tx.wait();
+      showStatus("payStatus", "✅ Invoice paid! TX: " + tx.hash, "success");
+    } catch (err) {
+      showStatus("payStatus", "❌ " + err.message, "error");
+    }
+  }
+
+  async function getInvoice() {
+    if (!contract) { alert("Connect wallet first! 💜"); return; }
+    const id = document.getElementById("getInvoiceId").value;
+    try {
+      const inv = await contract.getInvoice(id);
+      const statusText = inv[5] === 0 ? "🟡 Pending" : "✅ Paid";
+      const el = document.getElementById("invoiceResult");
+      el.className = "show";
+      el.innerHTML = `
+        <strong>ID:</strong> ${inv[0]}<br/>
+        <strong>Reference:</strong> ${inv[1]}<br/>
+        <strong>Payee:</strong> ${inv[2]}<br/>
+        <strong>Payer:</strong> ${inv[3] === "0x0000000000000000000000000000000000000000" ? "Not paid yet" : inv[3]}<br/>
+        <strong>Amount:</strong> ${inv[4]} Wei<br/>
+        <strong>Status:</strong> ${statusText}
+      `;
+    } catch (err) {
+      const el = document.getElementById("invoiceResult");
+      el.className = "show";
+      el.innerHTML = "❌ " + err.message;
+    }
+  }
+</script>
+</body>
+</html>
